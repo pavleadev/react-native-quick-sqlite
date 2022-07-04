@@ -1,7 +1,9 @@
 /**
  * Batch execution implementation
 */
-#include "sqlbatchexecutor.h"
+#include "OSPSQLBatchExecutor.h"
+
+namespace osp {
 
 void jsiBatchParametersToQuickArguments(jsi::Runtime &rt, jsi::Array const &batchParams, vector<QuickQueryArguments> *commands)
 {
@@ -53,7 +55,7 @@ SequelBatchOperationResult executeBatch(std::string dbName, vector<QuickQueryArg
     };
   }
 
-  try 
+  try
   {
     int affectedRows = 0;
     sqliteExecuteLiteral(dbName, "BEGIN EXCLUSIVE TRANSACTION");
@@ -67,7 +69,7 @@ SequelBatchOperationResult executeBatch(std::string dbName, vector<QuickQueryArg
           .type = SQLiteError,
           .message = result.errorMessage,
         };
-      } else 
+      } else
       {
         affectedRows += result.rowsAffected;
       }
@@ -87,3 +89,5 @@ SequelBatchOperationResult executeBatch(std::string dbName, vector<QuickQueryArg
     };
   }
 }
+
+} // namespace osp

@@ -7,7 +7,7 @@
  * This code is licensed under the MIT license
  */
 
-#include "JSIHelper.h"
+#include "OSPJSIHelper.h"
 #include <vector>
 
 using namespace std;

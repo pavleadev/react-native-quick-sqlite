@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import '../..';
+import { QuickSQLite as sqlite } from 'react-native-quick-sqlite';
 import { DataSource } from 'typeorm';
 import { Book } from './model/Book';
 import { User } from './model/User';

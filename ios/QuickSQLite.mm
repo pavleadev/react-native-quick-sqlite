@@ -8,44 +8,75 @@
  */
 
 #import "QuickSQLite.h"
-#import "installer.h"
 
 #import <React/RCTBridge+Private.h>
-#import <jsi/jsi.h>
-#import <ReactCommon/RCTTurboModuleManager.h>
-
 #import <React/RCTUtils.h>
-#import <ReactCommon/CallInvoker.h>
+#import <ReactCommon/RCTTurboModule.h>
+#import <jsi/jsi.h>
 
-#import <memory>
+#import "../cpp/OSPQuickSQLiteHostObject.h"
 
 @implementation QuickSQLite
 
-@synthesize bridge = _bridge;
-@synthesize methodQueue = _methodQueue;
+RCT_EXPORT_MODULE(QuickSQLite)
 
-RCT_EXPORT_MODULE()
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install) {
+  NSLog(@"Installing QuickSQLite module...");
 
-+ (BOOL)requiresMainQueueSetup {
-  return YES;
-}
-
-- (void)setBridge:(RCTBridge *)bridge {
-  _bridge = bridge;
-  _setBridgeOnMainQueue = RCTIsMainQueue();
-
-  RCTCxxBridge *cxxBridge = (RCTCxxBridge *)self.bridge;
-  if (!cxxBridge.runtime) {
-    return;
+  RCTBridge *bridge = [RCTBridge currentBridge];
+  RCTCxxBridge *cxxBridge = (RCTCxxBridge *)bridge;
+  if (cxxBridge == nil) {
+    return @false;
   }
-  
+
+  using namespace facebook;
+
+  auto jsiRuntime = (jsi::Runtime *)cxxBridge.runtime;
+  if (jsiRuntime == nil) {
+    return @false;
+  }
+  auto &runtime = *jsiRuntime;
   auto callInvoker = bridge.jsCallInvoker;
 
   // Get iOS app's document directory (to safely store database .sqlite3 file)
   NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true);
   NSString *documentPath = [paths objectAtIndex:0];
 
-  install(*(facebook::jsi::Runtime *)cxxBridge.runtime, callInvoker,[documentPath UTF8String]);
+  auto hostObject = std::static_pointer_cast<jsi::HostObject>(
+      std::make_shared<osp::QuickSQLiteHostObject>(callInvoker, [documentPath UTF8String]));
+  auto object = jsi::Object::createFromHostObject(runtime, hostObject);
+
+  runtime.global().setProperty(runtime, "__QuickSQLiteProxy",
+                               std::move(object));
+
+  NSLog(@"Successfully installed JSI bindings for react-native-quick-sqlite!");
+  return @true;
 }
+
+// RCT_EXPORT_MODULE()
+
+// + (BOOL)requiresMainQueueSetup {
+//   return YES;
+// }
+
+// - (void)setBridge:(RCTBridge *)bridge {
+//   _bridge = bridge;
+//   _setBridgeOnMainQueue = RCTIsMainQueue();
+
+//   RCTCxxBridge *cxxBridge = (RCTCxxBridge *)self.bridge;
+//   if (!cxxBridge.runtime) {
+//     return;
+//   }
+
+//   auto callInvoker = bridge.jsCallInvoker;
+
+//   // Get iOS app's document directory (to safely store database .sqlite3
+//   file) NSArray *paths =
+//   NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask,
+//   true); NSString *documentPath = [paths objectAtIndex:0];
+
+//   install(*(facebook::jsi::Runtime *)cxxBridge.runtime,
+//   callInvoker,[documentPath UTF8String]);
+// }
 
 @end

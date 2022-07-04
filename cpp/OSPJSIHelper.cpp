@@ -1,11 +1,4 @@
-//
-//  JSIHelper.cpp
-//  react-native-quick-sqlite
-//
-//  Created by Oscar on 13.03.22.
-//
-
-#include "JSIHelper.h"
+#include "OSPJSIHelper.h"
 
 using namespace std;
 using namespace facebook;

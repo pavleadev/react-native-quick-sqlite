@@ -1,10 +1,3 @@
-//
-//  JSIHelper.hpp
-//  react-native-quick-sqlite
-//
-//  Created by Oscar on 13.03.22.
-//
-
 #ifndef JSIHelper_h
 #define JSIHelper_h
 

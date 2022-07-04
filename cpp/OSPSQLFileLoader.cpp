@@ -1,7 +1,7 @@
 /**
  * SQL File Loader implementation
 */
-#include "sqlfileloader.h"
+#include "OSPSQLFileLoader.h"
 #include <iostream>
 #include <fstream>
 
